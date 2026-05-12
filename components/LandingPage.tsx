@@ -58,44 +58,41 @@ export function LandingPage() {
 
       {/* Hero Section */}
       <section className="pt-32 pb-24">
-        <div className="mx-auto max-w-5xl px-6">
-          <div className="grid items-start gap-16 lg:grid-cols-2">
-            {/* Left: Text content */}
-            <div className="space-y-10">
-              <div className="space-y-6">
-                <p className="font-mono text-sm text-neutral-500">// deploy your projects</p>
-                <h1 className="font-mono text-4xl font-medium leading-[1.3] tracking-tight md:text-5xl lg:text-6xl">
-                  ship to production
-                  <br />
-                  <span className="text-neutral-500">in seconds</span>
-                </h1>
-              </div>
+        <div className="mx-auto max-w-3xl px-6 text-center">
+          <div className="space-y-10">
+            <div className="space-y-6">
+              <p className="font-mono text-sm text-neutral-500">// deploy your projects</p>
+              <h1 className="font-mono text-4xl font-medium leading-[1.3] tracking-tight md:text-5xl lg:text-6xl">
+                Ship to production
+                <br />
+                <span className="text-neutral-500">in seconds</span>
+              </h1>
+            </div>
 
-              <p className="max-w-md font-mono text-base text-neutral-500 leading-relaxed">
-                The modern deployment platform for developers. Connect your GitHub repo and ship to production with confidence.
-              </p>
+            <p className="mx-auto max-w-lg font-mono text-base text-neutral-500 leading-relaxed">
+              The deployment platform for developers. Connect your GitHub repo and ship to production.
+            </p>
 
-              <div className="flex items-center gap-4 font-mono text-sm">
-                <a
-                  href="#"
-                  className="flex items-center gap-2 bg-white px-5 py-3 text-black hover:bg-neutral-200 transition-colors"
-                >
-                  <Gift className="size-4" />
-                  connect with github
-                </a>
-                <a
-                  href="#"
-                  className="flex items-center gap-2 text-neutral-500 hover:text-white transition-colors"
-                >
-                  view demo
-                  <ArrowRight className="size-4" />
-                </a>
-              </div>
+            <div className="flex items-center justify-center gap-4 font-mono text-sm">
+              <a
+                href="#"
+                className="flex items-center gap-2 bg-white px-5 py-3 text-black hover:bg-neutral-200 transition-colors"
+              >
+                <Gift className="size-4" />
+                connect with github
+              </a>
+              <a
+                href="#"
+                className="flex items-center gap-2 text-neutral-500 hover:text-white transition-colors"
+              >
+                view demo
+                <ArrowRight className="size-4" />
+              </a>
+            </div>
 
-              {/* Terminal inline */}
-              <div className="mt-8">
-                <Terminal />
-              </div>
+            {/* Terminal inline */}
+            <div className="mt-8">
+              <Terminal />
             </div>
           </div>
         </div>
@@ -122,12 +119,12 @@ export function LandingPage() {
       </section>
 
       {/* How It Works Section */}
-      <section id="how-it-works" className="py-24">
+      <section id="how-it-works" className="pt-24">
         <div className="mx-auto max-w-5xl px-6">
           <div className="mb-16">
             <p className="font-mono text-sm text-neutral-500">// how it works</p>
             <h2 className="mt-4 font-mono text-3xl font-medium tracking-tight md:text-4xl">
-              three steps to production
+              Three steps to production
             </h2>
           </div>
 
@@ -148,11 +145,11 @@ export function LandingPage() {
 
       {/* CTA Section */}
       <section className="py-24">
-        <div className="mx-auto max-w-3xl px-6">
+        <div className="mx-auto max-w-5xl px-6">
           <div className="border border-neutral-800 p-12">
             <p className="font-mono text-sm text-neutral-500">// ready to ship?</p>
             <h2 className="mt-4 font-mono text-3xl font-medium tracking-tight">
-              join thousands of developers
+              Join thousands of developers
             </h2>
             <p className="mt-4 font-mono text-base text-neutral-500">
               Free to start. No credit card required.
