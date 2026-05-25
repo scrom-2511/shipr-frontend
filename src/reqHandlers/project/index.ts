@@ -4,11 +4,15 @@ import axios from "axios";
 import { z } from "zod";
 
 export const deployProjectSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  description: z.string().optional(),
-  install_cmds: z.array(z.string()).default([]),
-  build_cmds: z.array(z.string()).default([]),
-  run_cmds: z.array(z.string()).default([]),
+  name: z.string(),
+  install: z.array(z.string()).optional(),
+  build: z.array(z.string()).optional(),
+  run: z.array(z.string()).optional(),
+  branch: z.string().optional(),
+  dist_dir: z.string(),
+  home_dir: z.string(),
+  full_name: z.string(),
+  installation_id: z.number(),
 });
 
 export type DeployProjectRequest = z.infer<typeof deployProjectSchema>;
@@ -22,7 +26,7 @@ export async function deployProject(data: DeployProjectRequest): Promise<DeployP
   try {
     await validateInput(data, deployProjectSchema);
 
-    const res = await axios.post(`${API_BASE_URL}/projects`, data);
+    const res = await axios.post(`${API_BASE_URL}/deploy-project`, data);
 
     if (res.data.success) {
       return res.data;

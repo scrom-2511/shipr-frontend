@@ -18,7 +18,12 @@ export async function signin(data: SigninRequest): Promise<SigninResponse> {
   try {
     await validateInput(data, signinSchema);
 
-    const res = await axios.post(`${API_BASE_URL}/signin`, data);
+    const res = await axios.post(`${API_BASE_URL}/signin`, data, {
+      withCredentials: true,
+      headers: { "Content-Type": "application/json" }
+    });
+
+    console.log(res)
 
     if (res.data.success) {
       return;

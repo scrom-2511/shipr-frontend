@@ -8,7 +8,7 @@ import { signup } from "@/src/reqHandlers/auth/signup";
 
 export function SignUpPage() {
   const navigate = useNavigate();
-  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -27,7 +27,7 @@ export function SignUpPage() {
     e.preventDefault();
     setError("");
 
-    signupMutation.mutate({ name, email, password });
+    signupMutation.mutate({ username, email, password });
   };
 
   return (
@@ -84,8 +84,8 @@ export function SignUpPage() {
                 id="name"
                 type="text"
                 placeholder="your name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 required
               />
             </div>

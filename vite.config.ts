@@ -11,4 +11,19 @@ export default defineConfig({
       '@': path.resolve(__dirname, './'),
     },
   },
+  server: {
+    allowedHosts: ["rivers-among-illinois-royalty.trycloudflare.com"],
+    proxy: {
+      '/api': {
+        target: 'https://francisco-unscholarlike-punctually.ngrok-free.dev',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+        secure: true,
+        headers: {
+          'ngrok-skip-browser-warning': 'true',
+        }
+      }
+    }
+
+  },
 })

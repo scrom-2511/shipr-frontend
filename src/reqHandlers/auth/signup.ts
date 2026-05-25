@@ -4,7 +4,7 @@ import axios from "axios";
 import { z } from "zod";
 
 export const signupSchema = z.object({
-  name: z.string().min(1, "Name is required"),
+  username: z.string().min(1, "Name is required"),
   email: z.email("Invalid email format"),
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
@@ -19,7 +19,11 @@ export async function signup(data: SignupRequest): Promise<SignupResponse> {
   try {
     await validateInput(data, signupSchema);
 
+    console.log(data);
+
     const res = await axios.post(`${API_BASE_URL}/signup`, data);
+
+    console.log(res);
 
     if (res.data.success) {
       return;

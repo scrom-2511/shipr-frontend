@@ -1,16 +1,37 @@
 @import "tailwindcss";
 
-/* Chrome, Edge, Safari */
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #262626;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #404040;
+}
+
+/* Global scrollbar cleanup */
 ::-webkit-scrollbar {
-    width: 12px;
-    display: none;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-    background: var(--background);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: red;
-    border-radius: 6px;
+  background: #171717;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #262626;
 }
