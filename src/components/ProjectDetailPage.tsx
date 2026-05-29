@@ -1,45 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, ExternalLink, GitBranch, Clock, Save, RotateCcw, GitCommit } from "lucide-react";
+import { ArrowLeft, ExternalLink, GitBranch, Clock, Save, RotateCcw, GitCommit, Plus, Trash2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { GitHubIcon } from "@/src/components/GitHubIcon";
 import { useFieldArray, useForm } from "react-hook-form";
-import { Plus, Trash2 } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { getProjectDetailHandler } from "../reqHandlers/project/getProjectDetail.reqhandler";
+import { updateProjectDetailHandler } from "../reqHandlers/project/updateProjectDetail.reqhandler";
+import { convertUTCToLocal } from "../utils/utcToLocal";
+import { Loading } from "./ui/Loading";
+import { TrafficGraph } from "./TrafficGraph";
 
-interface ProjectDetail {
-  id: string;
-  name: string;
-  url: string;
-  repo: string;
-  branch: string;
-  home_dir: string;
-  dist_dir: string;
-  install_cmds: string[];
-  build_cmds: string[];
-  run_cmds: string[];
-  status: "active" | "building" | "error";
-  lastDeployed: string;
-  lastDeploymentTime: string;
-  commitHash: string;
-}
-
-const mockProjectDetail: ProjectDetail = {
-  id: "1",
-  name: "my-landing-page",
-  url: "my-landing-page.shipr.dev",
-  repo: "scrom/landing-page",
-  branch: "main",
-  home_dir: "/",
-  dist_dir: "/dist",
-  install_cmds: ["npm install"],
-  build_cmds: ["npm run build"],
-  run_cmds: ["npm start"],
-  status: "active",
-  lastDeployed: "2 hours ago",
-  lastDeploymentTime: "2026-05-14T10:30:00Z",
-  commitHash: "a1b2c3d4e5f6",
-};
 
 type CommandField = {
   value: string;
@@ -47,35 +19,54 @@ type CommandField = {
 
 interface ProjectFormData {
   name: string;
-  url: string;
+  branch: string;
   home_dir: string;
   dist_dir: string;
-  branch: string;
   install_cmds: CommandField[];
   build_cmds: CommandField[];
   run_cmds: CommandField[];
 }
 
 export function ProjectDetailPage() {
-  useParams<{ id: string }>();
-  const [isEditing, setIsEditing] = useState(false);
+  const { id } = useParams<{ id: string }>();
+  // const [isEditing, setIsEditing] = useState(false);
+  const queryClient = useQueryClient();
+
+  const { data: project, isLoading, error } = useQuery({
+    queryKey: ["project", id],
+    queryFn: () => getProjectDetailHandler(id!),
+    enabled: !!id,
+  });
 
   const {
     register,
     control,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting },
-  } = useForm<ProjectFormData>({
-    defaultValues: {
-      name: mockProjectDetail.name,
-      url: mockProjectDetail.url,
-      branch: mockProjectDetail.branch,
-      home_dir: mockProjectDetail.home_dir,
-      dist_dir: mockProjectDetail.dist_dir,
-      install_cmds: mockProjectDetail.install_cmds.map((cmd) => ({ value: cmd })),
-      build_cmds: mockProjectDetail.build_cmds.map((cmd) => ({ value: cmd })),
-      run_cmds: mockProjectDetail.run_cmds.map((cmd) => ({ value: cmd })),
+    formState: { errors, isSubmitting: isFormSubmitting },
+  } = useForm<ProjectFormData>();
+
+  // Sync form with project data
+  useEffect(() => {
+    if (project) {
+      reset({
+        name: project.name,
+        branch: project.branch,
+        home_dir: project.home_dir,
+        dist_dir: project.dist_dir,
+        install_cmds: project.install_cmds.map((cmd) => ({ value: cmd })),
+        build_cmds: project.build_cmds.map((cmd) => ({ value: cmd })),
+        run_cmds: project.run_cmds.map((cmd) => ({ value: cmd })),
+      });
+    }
+  }, [project, reset]);
+
+  // Mutations
+  const updateMutation = useMutation({
+    mutationFn: updateProjectDetailHandler,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["project", id] });
+      // setIsEditing(false);
     },
   });
 
@@ -109,28 +100,60 @@ export function ProjectDetailPage() {
     name: "run_cmds",
   });
 
-  const project = mockProjectDetail;
-
   const handleCancel = () => {
-    reset();
-    setIsEditing(false);
+    if (project) {
+      reset({
+        name: project.name,
+        branch: project.branch,
+        home_dir: project.home_dir,
+        dist_dir: project.dist_dir,
+        install_cmds: project.install_cmds.map((cmd) => ({ value: cmd })),
+        build_cmds: project.build_cmds.map((cmd) => ({ value: cmd })),
+        run_cmds: project.run_cmds.map((cmd) => ({ value: cmd })),
+      });
+    }
+    // setIsEditing(false);
   };
 
   const handleOnSubmit = async (data: ProjectFormData) => {
+    if (!id) return;
     try {
       const payload = {
-        ...data,
+        project_id: id,
+        name: data.name,
+        branch: data.branch,
+        home_dir: data.home_dir,
+        dist_dir: data.dist_dir,
         install_cmds: data.install_cmds.map((cmd) => cmd.value),
         build_cmds: data.build_cmds.map((cmd) => cmd.value),
         run_cmds: data.run_cmds.map((cmd) => cmd.value),
       };
 
-      console.log("Submitting:", payload);
-      setIsEditing(false);
+      await updateMutation.mutateAsync(payload);
     } catch (error) {
       console.error(error);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-black">
+        <Loading title="Fetching project details..." />
+      </div>
+    );
+  }
+
+  if (error || !project) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-black text-white">
+        <p className="font-mono text-red-500">// error loading project</p>
+        <p className="mt-2 text-neutral-400">{(error as Error)?.message || "Project not found"}</p>
+        <Link to="/dashboard" className="mt-6 text-sm text-white hover:underline">
+          back to projects
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -199,21 +222,21 @@ export function ProjectDetailPage() {
                 </div>
                 <div className="flex items-center gap-2">
                   <GitCommit className="size-3" />
-                  <span>{project.commitHash}</span>
+                  <span>{project.commit_hash}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Clock className="size-3" />
-                  <span>{project.lastDeploymentTime}</span>
+                  <span>{convertUTCToLocal(project.last_deployment_time)}</span>
                 </div>
               </div>
             </div>
 
-            {!isEditing ? (
+            {/* {isEditing ? (
               <Button
                 variant="outline"
                 size="default"
                 className="border-neutral-700 font-mono text-sm hover:bg-white hover:text-black w-fit"
-                onClick={() => setIsEditing(true)}
+              // onClick={() => setIsEditing(true)}
               >
                 edit project
               </Button>
@@ -230,31 +253,32 @@ export function ProjectDetailPage() {
                 </Button>
                 <Button
                   onClick={handleSubmit(handleOnSubmit)}
-                  disabled={isSubmitting}
+                  disabled={isFormSubmitting || updateMutation.isPending}
                   className="bg-white font-mono text-sm text-black hover:bg-neutral-200"
                 >
                   <Save className="size-4" />
-                  {isSubmitting ? "saving..." : "save"}
+                  {isFormSubmitting || updateMutation.isPending ? "saving..." : "save"}
                 </Button>
               </div>
-            )}
+            )} */}
           </div>
 
           {/* Project URL */}
-          <div className="mt-8 mb-22">
+          <div className="mt-8">
             <a
-              href={`https://${project.url}`}
+              href={`https://${project.name}.shipr.dev`}
               target="_blank"
               rel="noopener noreferrer"
               className="group inline-flex items-center gap-2 font-mono text-sm text-white hover:text-neutral-400 transition-colors"
             >
-              {project.url}
+              {`${project.name}.shipr.dev`}
               <ExternalLink className="size-3 opacity-50 group-hover:opacity-100 transition-opacity" />
             </a>
           </div>
 
+
           {/* Edit Form */}
-          {isEditing ? (
+          {false ? (
             <form
               onSubmit={handleSubmit(handleOnSubmit)}
               className="mt-8 space-y-6"
@@ -265,7 +289,7 @@ export function ProjectDetailPage() {
                   // project_name
                 </label>
                 <Input
-                  className="mt-2"
+                  className="mt-2 text-white"
                   {...register("name", {
                     required: "Project name is required",
                   })}
@@ -277,31 +301,13 @@ export function ProjectDetailPage() {
                 )}
               </div>
 
-              {/* URL */}
-              <div>
-                <label className="block font-mono text-xs text-neutral-500">
-                  // url
-                </label>
-                <Input
-                  className="mt-2"
-                  {...register("url", {
-                    required: "URL is required",
-                  })}
-                />
-                {errors.url && (
-                  <p className="mt-1 text-xs text-red-500">
-                    {errors.url.message}
-                  </p>
-                )}
-              </div>
-
               {/* BRANCH */}
               <div>
                 <label className="block font-mono text-xs text-neutral-500">
                   // branch
                 </label>
                 <Input
-                  className="mt-2"
+                  className="mt-2 text-white"
                   {...register("branch", {
                     required: "Branch is required",
                   })}
@@ -314,7 +320,7 @@ export function ProjectDetailPage() {
                   // home_dir
                 </label>
                 <Input
-                  className="mt-2"
+                  className="mt-2 text-white"
                   {...register("home_dir", {
                     required: "Home dir is required",
                   })}
@@ -327,7 +333,7 @@ export function ProjectDetailPage() {
                   // dist_dir
                 </label>
                 <Input
-                  className="mt-2"
+                  className="mt-2 text-white"
                   {...register("dist_dir", {
                     required: "Dist dir is required",
                   })}
@@ -353,6 +359,7 @@ export function ProjectDetailPage() {
                   {installFields.map((field, index) => (
                     <div key={field.id} className="flex gap-2">
                       <Input
+                        className="text-white"
                         {...register(`install_cmds.${index}.value` as const, {
                           required: "Install command is required",
                         })}
@@ -391,6 +398,7 @@ export function ProjectDetailPage() {
                   {buildFields.map((field, index) => (
                     <div key={field.id} className="flex gap-2">
                       <Input
+                        className="text-white"
                         {...register(`build_cmds.${index}.value` as const, {
                           required: "Build command is required",
                         })}
@@ -429,6 +437,7 @@ export function ProjectDetailPage() {
                   {runFields.map((field, index) => (
                     <div key={field.id} className="flex gap-2">
                       <Input
+                        className="text-white"
                         {...register(`run_cmds.${index}.value` as const, {
                           required: "Run command is required",
                         })}
@@ -458,7 +467,7 @@ export function ProjectDetailPage() {
                 </label>
                 <div className="mt-2 flex items-center gap-2 font-mono text-sm">
                   <GitHubIcon className="size-4 text-neutral-500" />
-                  <span>{project.repo}</span>
+                  <span>{project.full_name}</span>
                 </div>
               </div>
 
@@ -525,6 +534,8 @@ export function ProjectDetailPage() {
               </div>
             </div>
           )}
+          {/* Traffic Graph */}
+          <TrafficGraph />
         </div>
       </main>
     </div>
