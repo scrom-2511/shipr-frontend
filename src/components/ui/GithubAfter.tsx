@@ -14,8 +14,8 @@ const GithubAfter = () => {
     })
 
     useEffect(() => {
-        let installation_id = new URLSearchParams(window.location.search).get("installation_id")
-        let state = new URLSearchParams(window.location.search).get("state")
+        const installation_id = new URLSearchParams(window.location.search).get("installation_id")
+        const state = new URLSearchParams(window.location.search).get("state")
         if (installation_id && state) {
             githubAfterInstallationMutation.mutate({ installation_id: Number(installation_id), state })
         }

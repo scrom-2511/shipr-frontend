@@ -32,6 +32,18 @@
   border-radius: 10px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #262626;
+
+@keyframes draw {
+  from {
+    stroke-dashoffset: 1000;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.animate-draw {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: draw 2s ease-out forwards;
 }

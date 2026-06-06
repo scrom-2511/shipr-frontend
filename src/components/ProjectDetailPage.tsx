@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, ExternalLink, GitBranch, Clock, Save, RotateCcw, GitCommit, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, ExternalLink, GitBranch, Clock, GitCommit, Plus, Trash2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { GitHubIcon } from "@/src/components/GitHubIcon";
@@ -8,6 +8,8 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getProjectDetailHandler } from "../reqHandlers/project/getProjectDetail.reqhandler";
 import { updateProjectDetailHandler } from "../reqHandlers/project/updateProjectDetail.reqhandler";
+import { deleteProjectHandler } from "../reqHandlers/project/deleteProject.reqhandler";
+import { useNavigate } from "react-router-dom";
 import { convertUTCToLocal } from "../utils/utcToLocal";
 import { Loading } from "./ui/Loading";
 import { TrafficGraph } from "./TrafficGraph";
@@ -20,15 +22,17 @@ type CommandField = {
 interface ProjectFormData {
   name: string;
   branch: string;
-  home_dir: string;
+  root_dir: string;
   dist_dir: string;
   install_cmds: CommandField[];
   build_cmds: CommandField[];
   run_cmds: CommandField[];
+  envs: { key: string; value: string }[];
 }
 
 export function ProjectDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   // const [isEditing, setIsEditing] = useState(false);
   const queryClient = useQueryClient();
 
@@ -43,7 +47,7 @@ export function ProjectDetailPage() {
     control,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting: isFormSubmitting },
+    formState: { errors },
   } = useForm<ProjectFormData>();
 
   // Sync form with project data
@@ -52,11 +56,12 @@ export function ProjectDetailPage() {
       reset({
         name: project.name,
         branch: project.branch,
-        home_dir: project.home_dir,
+        root_dir: project.root_dir,
         dist_dir: project.dist_dir,
         install_cmds: project.install_cmds.map((cmd) => ({ value: cmd })),
         build_cmds: project.build_cmds.map((cmd) => ({ value: cmd })),
         run_cmds: project.run_cmds.map((cmd) => ({ value: cmd })),
+        envs: project.envs.map((env) => ({ key: env.key, value: env.value })),
       });
     }
   }, [project, reset]);
@@ -69,6 +74,25 @@ export function ProjectDetailPage() {
       // setIsEditing(false);
     },
   });
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteProjectHandler,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+      navigate("/dashboard");
+    },
+  });
+
+  const handleDelete = async () => {
+    if (!id) return;
+    if (window.confirm("Are you sure you want to delete this project? This action cannot be undone.")) {
+      try {
+        await deleteMutation.mutateAsync(id);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
 
   // Install commands
   const {
@@ -100,20 +124,15 @@ export function ProjectDetailPage() {
     name: "run_cmds",
   });
 
-  const handleCancel = () => {
-    if (project) {
-      reset({
-        name: project.name,
-        branch: project.branch,
-        home_dir: project.home_dir,
-        dist_dir: project.dist_dir,
-        install_cmds: project.install_cmds.map((cmd) => ({ value: cmd })),
-        build_cmds: project.build_cmds.map((cmd) => ({ value: cmd })),
-        run_cmds: project.run_cmds.map((cmd) => ({ value: cmd })),
-      });
-    }
-    // setIsEditing(false);
-  };
+  // Envs
+  const {
+    fields: envFields,
+    append: appendEnv,
+    remove: removeEnv,
+  } = useFieldArray({
+    control,
+    name: "envs",
+  });
 
   const handleOnSubmit = async (data: ProjectFormData) => {
     if (!id) return;
@@ -122,11 +141,12 @@ export function ProjectDetailPage() {
         project_id: id,
         name: data.name,
         branch: data.branch,
-        home_dir: data.home_dir,
+        root_dir: data.root_dir,
         dist_dir: data.dist_dir,
         install_cmds: data.install_cmds.map((cmd) => cmd.value),
         build_cmds: data.build_cmds.map((cmd) => cmd.value),
         run_cmds: data.run_cmds.map((cmd) => cmd.value),
+        envs: data.envs.filter(env => env.key.trim() !== ""),
       };
 
       await updateMutation.mutateAsync(payload);
@@ -317,11 +337,11 @@ export function ProjectDetailPage() {
               {/* HOME DIR */}
               <div>
                 <label className="block font-mono text-xs text-neutral-500">
-                  // home_dir
+                  // root_dir
                 </label>
                 <Input
                   className="mt-2 text-white"
-                  {...register("home_dir", {
+                  {...register("root_dir", {
                     required: "Home dir is required",
                   })}
                 />
@@ -456,6 +476,51 @@ export function ProjectDetailPage() {
                   ))}
                 </div>
               </div>
+
+              {/* ENVS */}
+              <div>
+                <div className="mb-2 flex items-center justify-between">
+                  <label className="font-mono text-xs text-neutral-500">
+                    // envs
+                  </label>
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="outline"
+                    onClick={() => appendEnv({ key: "", value: "" })}
+                  >
+                    <Plus className="size-4" />
+                  </Button>
+                </div>
+                <div className="space-y-2">
+                  {envFields.map((field, index) => (
+                    <div key={field.id} className="flex gap-2">
+                      <Input
+                        placeholder="KEY"
+                        className="flex-1 text-white"
+                        {...register(`envs.${index}.key` as const, {
+                          required: "Key is required",
+                        })}
+                      />
+                      <Input
+                        placeholder="VALUE"
+                        className="flex-1 text-white"
+                        {...register(`envs.${index}.value` as const)}
+                      />
+                      {envFields.length > 1 && (
+                        <Button
+                          type="button"
+                          size="icon"
+                          variant="destructive"
+                          onClick={() => removeEnv(index)}
+                        >
+                          <Trash2 className="size-4" />
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
             </form>
           ) : (
             /* View Mode */
@@ -481,9 +546,9 @@ export function ProjectDetailPage() {
                 </div>
                 <div className="text-center">
                   <label className="block font-mono text-xs text-neutral-500">
-                    // home_dir
+                    // root_dir
                   </label>
-                  <p className="mt-2 font-mono text-sm">{project.home_dir}</p>
+                  <p className="mt-2 font-mono text-sm">{project.root_dir}</p>
                 </div>
                 <div className="text-right">
                   <label className="block font-mono text-xs text-neutral-500">
@@ -532,10 +597,47 @@ export function ProjectDetailPage() {
                   </div>
                 </div>
               </div>
+
+              {/* ENVS */}
+              <div className="mt-8 border-t border-neutral-900 pt-8">
+                <label className="block font-mono text-xs text-neutral-500">
+                    // envs
+                </label>
+                <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {project.envs.map((env, i) => (
+                    <div key={i} className="flex items-center justify-between p-3 rounded-lg border border-neutral-800 bg-neutral-900/50">
+                      <code className="font-mono text-sm text-neutral-400">{env.key}</code>
+                      <code className="font-mono text-sm text-neutral-200">{env.value}</code>
+                    </div>
+                  ))}
+                  {project.envs.length === 0 && (
+                    <p className="font-mono text-sm text-neutral-500 italic">No environment variables defined</p>
+                  )}
+                </div>
+              </div>
             </div>
           )}
           {/* Traffic Graph */}
           <TrafficGraph />
+
+          {/* Danger Zone */}
+          <div className="mt-16 pt-8 border-t border-red-900/30">
+            <h2 className="font-mono text-sm font-medium text-red-500 uppercase tracking-wider">Danger Zone</h2>
+            <div className="mt-4 flex flex-col sm:flex-row items-center justify-between p-6 rounded-xl border border-red-900/20 bg-red-900/5 backdrop-blur-sm gap-4">
+              <div>
+                <p className="font-medium text-white">Delete this project</p>
+                <p className="mt-1 text-sm text-neutral-400">Once you delete a project, there is no going back. Please be certain.</p>
+              </div>
+              <Button 
+                variant="destructive" 
+                className="font-mono text-xs uppercase px-6"
+                onClick={handleDelete}
+                disabled={deleteMutation.isPending}
+              >
+                {deleteMutation.isPending ? "Deleting..." : "Delete Project"}
+              </Button>
+            </div>
+          </div>
         </div>
       </main>
     </div>

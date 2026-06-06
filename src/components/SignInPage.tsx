@@ -15,7 +15,7 @@ export function SignInPage() {
   const signinMutation = useMutation({
     mutationFn: signin,
     onSuccess: () => {
-      navigate("/");
+      navigate("/dashboard");
     },
     onError: (err: { message: string }) => {
       setError(err.message || "Sign in failed");

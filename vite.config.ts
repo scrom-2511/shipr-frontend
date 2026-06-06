@@ -2,7 +2,6 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
-
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
@@ -12,7 +11,7 @@ export default defineConfig({
     },
   },
   server: {
-    allowedHosts: ["rivers-among-illinois-royalty.trycloudflare.com"],
+    allowedHosts: ["incl-tablets-chairs-printed.trycloudflare.com"],
     proxy: {
       '/api': {
         target: 'https://francisco-unscholarlike-punctually.ngrok-free.dev',
@@ -24,6 +23,5 @@ export default defineConfig({
         }
       }
     }
-
   },
 })
