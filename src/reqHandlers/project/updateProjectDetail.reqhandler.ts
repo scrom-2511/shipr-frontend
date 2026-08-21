@@ -6,7 +6,6 @@ export interface UpdateProjectRequest {
     name: string;
     branch: string;
     root_dir: string;
-    dist_dir: string;
     install_cmds: string[];
     build_cmds: string[];
     run_cmds: string[];

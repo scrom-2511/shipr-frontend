@@ -11,7 +11,7 @@ export default defineConfig({
     },
   },
   server: {
-    allowedHosts: ["incl-tablets-chairs-printed.trycloudflare.com"],
+    allowedHosts: ["presented-tank-forwarding-scenes.trycloudflare.com"],
     proxy: {
       '/api': {
         target: 'https://francisco-unscholarlike-punctually.ngrok-free.dev',

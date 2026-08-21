@@ -5,15 +5,11 @@ import { z } from "zod";
 
 export const deployProjectSchema = z.object({
     project_id: z.string().min(1, "Name is required"),
-    install_cmds: z.array(z.string()),
-    build_cmds: z.array(z.string()),
-    run_cmds: z.array(z.string()),
     envs: z.array(z.object({
         key: z.string().min(1, "Key is required"),
         value: z.string()
     })),
     branch: z.string().min(1, "Branch is required"),
-    dist_dir: z.string().min(1, "Dist dir is required"),
     root_dir: z.string().min(1, "Home dir is required"),
     full_name: z.string().min(1, "Full name is required"),
     installation_id: z.number(),

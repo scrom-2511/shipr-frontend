@@ -9,7 +9,6 @@ export interface ProjectDetail {
     status: "active" | "building" | "error";
     last_deployment_time: string;
     root_dir: string;
-    dist_dir: string;
     install_cmds: string[];
     build_cmds: string[];
     run_cmds: string[];
@@ -23,6 +22,7 @@ export async function getProjectDetailHandler(id: string): Promise<ProjectDetail
         const res = await axios.get(`${API_BASE_URL}/get-project-detail?project_id=${id}`);
 
         if (res.data.success) {
+            console.log(res.data.data);
             return res.data.data;
         }
 

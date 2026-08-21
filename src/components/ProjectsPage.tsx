@@ -129,6 +129,12 @@ export function ProjectsPage() {
             >
               projects
             </Link>
+            <Link
+              to="/billing"
+              className="text-neutral-500 hover:text-white transition-colors"
+            >
+              billing
+            </Link>
             <a href="#" className="text-neutral-500 hover:text-white transition-colors">
               settings
             </a>
@@ -288,36 +294,6 @@ export function DeployModal({ repo, setShowModal }: { repo: GithubRepository, se
     mode: "onBlur",
   });
 
-  // INSTALL COMMANDS
-  const {
-    fields: installFields,
-    append: appendInstall,
-    remove: removeInstall,
-  } = useFieldArray({
-    control,
-    name: "install_cmds",
-  });
-
-  // BUILD COMMANDS
-  const {
-    fields: buildFields,
-    append: appendBuild,
-    remove: removeBuild,
-  } = useFieldArray({
-    control,
-    name: "build_cmds",
-  });
-
-  // RUN COMMANDS
-  const {
-    fields: runFields,
-    append: appendRun,
-    remove: removeRun,
-  } = useFieldArray({
-    control,
-    name: "run_cmds",
-  });
-
   // ENVS
   const {
     fields: envFields,
@@ -344,12 +320,8 @@ export function DeployModal({ repo, setShowModal }: { repo: GithubRepository, se
     try {
       const payload: DeployProjectRequest = {
         project_id: data.name,
-        install_cmds: data.install_cmds?.map((cmd) => cmd.value) || [],
-        build_cmds: data.build_cmds?.map((cmd) => cmd.value) || [],
-        run_cmds: data.run_cmds?.map((cmd) => cmd.value) || [],
         envs: data.envs?.filter(env => env.key.trim() !== "") || [],
         branch: data.branch,
-        dist_dir: data.dist_dir,
         root_dir: data.root_dir,
         full_name: data.full_name,
         installation_id: data.installation_id,
@@ -359,7 +331,6 @@ export function DeployModal({ repo, setShowModal }: { repo: GithubRepository, se
 
       deployMutation.mutate(payload);
 
-      reset();
     } catch (error) {
       console.error(error);
     }
@@ -436,141 +407,6 @@ export function DeployModal({ repo, setShowModal }: { repo: GithubRepository, se
             required: "Home dir is required",
           })}
         />
-      </div>
-
-      {/* DIST DIR */}
-      <div>
-        <label className="block font-mono text-xs text-neutral-500">
-          // dist_dir
-        </label>
-
-        <Input
-          placeholder="/dist"
-          className="mt-2"
-          {...register("dist_dir", {
-            required: "Dist dir is required",
-          })}
-        />
-      </div>
-
-      {/* INSTALL COMMANDS */}
-      <div>
-        <div className="mb-2 flex items-center justify-between">
-          <label className="font-mono text-xs text-neutral-500">
-            // install_cmds
-          </label>
-
-          <Button
-            type="button"
-            size="icon"
-            variant="outline"
-            onClick={() => appendInstall({ value: "" })}
-          >
-            <Plus className="h-4 w-4" />
-          </Button>
-        </div>
-
-        <div className="space-y-2">
-          {installFields.map((field, index) => (
-            <div key={field.id} className="flex gap-2">
-              <Input
-                placeholder="npm install"
-                {...register(`install_cmds.${index}.value`)}
-              />
-
-              {installFields.length > 1 && (
-                <Button
-                  type="button"
-                  size="icon"
-                  variant="destructive"
-                  onClick={() => removeInstall(index)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* BUILD COMMANDS */}
-      <div>
-        <div className="mb-2 flex items-center justify-between">
-          <label className="font-mono text-xs text-neutral-500">
-            // build_cmds
-          </label>
-
-          <Button
-            type="button"
-            size="icon"
-            variant="outline"
-            onClick={() => appendBuild({ value: "" })}
-          >
-            <Plus className="h-4 w-4" />
-          </Button>
-        </div>
-
-        <div className="space-y-2">
-          {buildFields.map((field, index) => (
-            <div key={field.id} className="flex gap-2">
-              <Input
-                placeholder="npm run build"
-                {...register(`build_cmds.${index}.value`)}
-              />
-
-              {buildFields.length > 1 && (
-                <Button
-                  type="button"
-                  size="icon"
-                  variant="destructive"
-                  onClick={() => removeBuild(index)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* RUN COMMANDS */}
-      <div>
-        <div className="mb-2 flex items-center justify-between">
-          <label className="font-mono text-xs text-neutral-500">
-            // run_cmds
-          </label>
-
-          <Button
-            type="button"
-            size="icon"
-            variant="outline"
-            onClick={() => appendRun({ value: "" })}
-          >
-            <Plus className="h-4 w-4" />
-          </Button>
-        </div>
-
-        <div className="space-y-2">
-          {runFields.map((field, index) => (
-            <div key={field.id} className="flex gap-2">
-              <Input
-                placeholder="npm start"
-                {...register(`run_cmds.${index}.value`)}
-              />
-
-              {runFields.length > 1 && (
-                <Button
-                  type="button"
-                  size="icon"
-                  variant="destructive"
-                  onClick={() => removeRun(index)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              )}
-            </div>
-          ))}
-        </div>
       </div>
 
       {/* ENVS */}
