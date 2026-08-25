@@ -93,10 +93,9 @@ export function BillingPage() {
           <ProjectsUsageTable projects={billingData.projects} />
 
           {/* Payment Method & Auto Top-Up Grid */}
-          {/* <SavedPaymentAndAutoReload
-            paymentMethod={billingData.payment_method}
-            onOpenAddCredits={() => setShowAddCreditsModal(true)}
-          /> */}
+          <SavedPaymentAndAutoReload
+            auto_topup_enabled={billingData.auto_topup_enabled}
+          />
 
           {/* Invoices & History Table */}
           {/* <InvoiceHistoryTable invoices={billingData.invoices} /> */}

@@ -42,6 +42,7 @@ export interface BillingDetails {
   current_month_cost: number;
   estimated_monthly_cost: number;
   projects: ProjectBillingUsage[];
+  auto_topup_enabled: boolean;
 }
 
 export async function getBillingDetailsHandler(): Promise<BillingDetails> {

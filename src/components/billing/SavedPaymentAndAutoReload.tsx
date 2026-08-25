@@ -1,20 +1,16 @@
-import { CreditCard, Zap } from "lucide-react";
-import { Button } from "../ui/button";
-import { type PaymentMethod } from "@/src/reqHandlers/billing/getBillingDetails.reqhandler";
+import { Zap } from "lucide-react";
 
 interface SavedPaymentAndAutoReloadProps {
-  paymentMethod: PaymentMethod | null;
-  onOpenAddCredits: () => void;
+  auto_topup_enabled: boolean;
 }
 
 export function SavedPaymentAndAutoReload({
-  paymentMethod,
-  onOpenAddCredits,
+  auto_topup_enabled,
 }: SavedPaymentAndAutoReloadProps) {
   return (
     <div className="grid gap-6 md:grid-cols-2">
       {/* Saved Payment Method */}
-      <div className="rounded-xl border border-neutral-800 bg-neutral-950 p-6 space-y-4">
+      {/* <div className="rounded-xl border border-neutral-800 bg-neutral-950 p-6 space-y-4">
         <div className="flex items-center justify-between">
           <p className="font-mono text-xs text-neutral-500 uppercase tracking-wider">
             // Saved Payment Method
@@ -54,7 +50,7 @@ export function SavedPaymentAndAutoReload({
         >
           Add or Update Payment Method
         </Button>
-      </div>
+      </div> */}
 
       {/* Auto Top-Up */}
       <div className="rounded-xl border border-neutral-800 bg-neutral-950 p-6 space-y-4">
@@ -63,13 +59,13 @@ export function SavedPaymentAndAutoReload({
           <Zap className="size-4 text-yellow-400" />
         </div>
         <p className="font-mono text-xs text-neutral-400 leading-relaxed">
-          Automatically recharge your credit balance by $50.00 via Dodo Payments whenever balance drops below $10.00 to prevent microVM execution interruptions.
+          Automatically recharge your credit balance by $50.00 whenever balance drops below $10.00 to prevent microVM execution interruptions.
         </p>
         <div className="flex items-center justify-between pt-2 border-t border-neutral-900">
           <span className="font-mono text-xs text-neutral-500">Status</span>
           <span className="font-mono text-xs text-emerald-400 flex items-center gap-1.5 font-medium">
             <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
-            Enabled
+            {auto_topup_enabled ? "Enabled" : "Disabled"}
           </span>
         </div>
       </div>
