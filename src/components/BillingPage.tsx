@@ -10,9 +10,10 @@ import { BillingHeader } from "./billing/BillingHeader";
 import { BillingStatsGrid } from "./billing/BillingStatsGrid";
 import { PricingStandards } from "./billing/PricingStandards";
 import { ProjectsUsageTable } from "./billing/ProjectsUsageTable";
-import { SavedPaymentAndAutoReload } from "./billing/SavedPaymentAndAutoReload";
+
 import { InvoiceHistoryTable } from "./billing/InvoiceHistoryTable";
 import { AddCreditsModal } from "./billing/AddCreditsModal";
+import { AutoTopUp } from "./billing/SavedPaymentAndAutoReload";
 
 export function BillingPage() {
   const [showAddCreditsModal, setShowAddCreditsModal] = useState(false);
@@ -89,13 +90,13 @@ export function BillingPage() {
           {/* Pricing Standard & Transparency Section */}
           <PricingStandards />
 
-          {/* Active Projects Usage Breakdown */}
-          <ProjectsUsageTable projects={billingData.projects} />
-
-          {/* Payment Method & Auto Top-Up Grid */}
-          <SavedPaymentAndAutoReload
+          {/* Auto Top-Up Grid */}
+          <AutoTopUp
             auto_topup_enabled={billingData.auto_topup_enabled}
           />
+
+          {/* Active Projects Usage Breakdown */}
+          <ProjectsUsageTable projects={billingData.projects} />
 
           {/* Invoices & History Table */}
           {/* <InvoiceHistoryTable invoices={billingData.invoices} /> */}
