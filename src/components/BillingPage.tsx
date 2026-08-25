@@ -13,7 +13,7 @@ import { ProjectsUsageTable } from "./billing/ProjectsUsageTable";
 
 import { InvoiceHistoryTable } from "./billing/InvoiceHistoryTable";
 import { AddCreditsModal } from "./billing/AddCreditsModal";
-import { AutoTopUp } from "./billing/SavedPaymentAndAutoReload";
+import { AutoTopUp } from "./billing/AutoTopup";
 
 export function BillingPage() {
   const [showAddCreditsModal, setShowAddCreditsModal] = useState(false);

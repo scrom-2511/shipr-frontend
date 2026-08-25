@@ -146,7 +146,7 @@ export function AddCreditsModal({ userId = 1, onClose }: AddCreditsModalProps) {
             </div>
 
             <p className="text-xs text-neutral-400 leading-relaxed">
-              You will be redirected to the secure Dodo Payments checkout page where you can pay using Cards, UPI, NetBanking, Apple Pay, or Google Pay.
+              You will be redirected to the secure Dodo Payments checkout page where you can pay using Cards, UPI.
             </p>
 
             <div className="flex items-center gap-2 pt-1 text-[11px] text-neutral-500 font-semibold uppercase">
