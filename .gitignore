@@ -27,3 +27,5 @@ CLAUDE.md
 /.agents
 skills-lock.json
 FRONTEND_API_CONTEXT.md
+/*.md
+*.md

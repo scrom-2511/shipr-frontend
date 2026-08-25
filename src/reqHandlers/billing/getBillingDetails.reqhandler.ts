@@ -42,8 +42,6 @@ export interface BillingDetails {
   current_month_cost: number;
   estimated_monthly_cost: number;
   projects: ProjectBillingUsage[];
-  invoices: InvoiceItem[];
-  payment_method?: PaymentMethodItem;
 }
 
 export async function getBillingDetailsHandler(): Promise<BillingDetails> {
