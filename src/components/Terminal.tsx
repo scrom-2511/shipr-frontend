@@ -22,7 +22,7 @@ const defaultLines: TerminalLine[] = [
   { text: "", delay: 2100 },
   { text: "  [done] Deployed in 3.2s", delay: 2400, highlight: true },
   { text: "", delay: 2700 },
-  { text: "  → https://my-app.shipr.dev", delay: 3000, link: true },
+  { text: "  → https://my-app.shipr.com", delay: 3000, link: true },
 ];
 
 export function Terminal({ lines = defaultLines, className = "" }: TerminalProps) {
@@ -66,13 +66,12 @@ export function Terminal({ lines = defaultLines, className = "" }: TerminalProps
         {visibleLines.map((line, i) => (
           <div
             key={i}
-            className={`${
-              line.startsWith("$") ? "text-neutral-300 font-medium" :
-              line.startsWith("[done]") ? "text-white" :
-              line.startsWith("→") ? "text-neutral-400 underline underline-offset-4" :
-              line.includes("...") ? "text-neutral-500" :
-              "text-neutral-600"
-            }`}
+            className={`${line.startsWith("$") ? "text-neutral-300 font-medium" :
+                line.startsWith("[done]") ? "text-white" :
+                  line.startsWith("→") ? "text-neutral-400 underline underline-offset-4" :
+                    line.includes("...") ? "text-neutral-500" :
+                      "text-neutral-600"
+              }`}
           >
             {line}
           </div>

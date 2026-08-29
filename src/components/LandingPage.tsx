@@ -115,7 +115,7 @@ export function LandingPage() {
               <div className="mt-2 font-mono text-sm text-neutral-500">uptime sla</div>
             </div>
             <div className="py-10 text-center">
-              <div className="font-mono text-3xl font-medium">&lt;3s</div>
+              <div className="font-mono text-3xl font-medium">&lt;10s</div>
               <div className="mt-2 font-mono text-sm text-neutral-500">avg deploy time</div>
             </div>
           </div>

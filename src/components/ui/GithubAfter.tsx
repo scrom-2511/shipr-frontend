@@ -22,7 +22,9 @@ const GithubAfter = () => {
     }, [])
 
     return (
-        <div>GithubAfter</div>
+        <div className='bg-black h-screen w-screen flex flex-col items-center justify-center'>
+            <div className='text-white font-bold text-2xl'>Github app linked!</div>
+        </div>
     )
 }
 

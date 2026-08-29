@@ -32,13 +32,13 @@ function ProjectCard({ project }: { project: Project }) {
             </h3>
             <div className="flex items-center gap-2">
               <span className="relative flex size-2.5">
-                {project.status === "building" && (
+                {project.status.toLowerCase() === "building" && (
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-yellow-400/75 opacity-75"></span>
                 )}
                 <span
-                  className={`relative inline-flex size-2.5 rounded-full ${project.status === "active"
+                  className={`relative inline-flex size-2.5 rounded-full ${project.status.toLowerCase() === "running" || project.status.toLowerCase() === "ready"
                     ? "bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]"
-                    : project.status === "building"
+                    : project.status.toLowerCase() === "deploying"
                       ? "bg-yellow-500 shadow-[0_0_8px_rgba(234,179,8,0.5)]"
                       : "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]"
                     }`}
@@ -51,7 +51,7 @@ function ProjectCard({ project }: { project: Project }) {
           </div>
           <div className="mt-2 flex items-center gap-1.5 font-mono text-sm text-neutral-400 group-hover:text-neutral-300 transition-colors">
             <span className="text-neutral-600">https://</span>
-            {`${project.project_id}.shipr.dev`}
+            {`${project.project_id}.shipr.com`}
           </div>
         </div>
         <div className="flex h-9 w-9 items-center justify-center rounded-xl  transition-all duration-300">
@@ -330,6 +330,7 @@ export function DeployModal({ repo, setShowModal }: { repo: GithubRepository, se
       console.log("payload", payload);
 
       deployMutation.mutate(payload);
+      setShowModal(false)
 
     } catch (error) {
       console.error(error);

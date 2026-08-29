@@ -169,14 +169,14 @@ export function ProjectDetailPage() {
               <div className="mt-3 flex flex-wrap items-center gap-4 font-mono text-xs text-neutral-500">
                 <div className="flex items-center gap-2">
                   <span
-                    className={`size-2 rounded-full ${project.status === "active"
+                    className={`size-2 rounded-full ${project.status.toLowerCase() === "running" || project.status.toLowerCase() === "ready"
                       ? "bg-green-500"
-                      : project.status === "building"
+                      : project.status.toLowerCase() === "deploying"
                         ? "bg-yellow-500"
                         : "bg-red-500"
                       }`}
                   />
-                  <span>{project.status}</span>
+                  <span>{project.status.charAt(0).toUpperCase() + project.status.slice(1).toLowerCase()}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <GitBranch className="size-3" />
@@ -228,12 +228,12 @@ export function ProjectDetailPage() {
           {/* Project URL */}
           <div className="mt-8">
             <a
-              href={`https://${project.id}.shipr.dev`}
+              href={`https://${project.project_id}.shipr.com`}
               target="_blank"
               rel="noopener noreferrer"
               className="group inline-flex items-center gap-2 font-mono text-sm text-white hover:text-neutral-400 transition-colors"
             >
-              {`${project.name}.shipr.dev`}
+              {`${project.project_id}.shipr.com`}
               <ExternalLink className="size-3 opacity-50 group-hover:opacity-100 transition-opacity" />
             </a>
           </div>

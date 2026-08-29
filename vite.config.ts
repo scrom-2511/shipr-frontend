@@ -11,7 +11,7 @@ export default defineConfig({
     },
   },
   server: {
-    allowedHosts: ["healthcare-camcorders-oecd-flour.trycloudflare.com"],
+    allowedHosts: ["wonderful-sheep-lee-ability.trycloudflare.com"],
     proxy: {
       '/api': {
         target: 'https://francisco-unscholarlike-punctually.ngrok-free.dev',

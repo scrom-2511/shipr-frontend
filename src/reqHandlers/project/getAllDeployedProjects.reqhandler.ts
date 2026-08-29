@@ -2,9 +2,11 @@ import { API_BASE_URL } from "@/src/config/endpoints";
 import axios from "axios";
 
 enum ProjectStatus {
-    ACTIVE = "active",
-    BUILDING = "building",
-    ERROR = "error"
+    RUNNING = "running",
+    STOPPED = "stopped",
+    DEPLOYING = "deploying",
+    ERROR = "error",
+    READY = "ready"
 }
 
 export interface Project {

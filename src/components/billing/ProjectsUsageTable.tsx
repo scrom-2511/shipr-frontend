@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 import { ArrowUpRight, Layers } from "lucide-react";
-import { type BillingProject } from "@/src/reqHandlers/billing/getBillingDetails.reqhandler";
+import type { ProjectBillingUsage } from "@/src/reqHandlers/billing/getBillingDetails.reqhandler";
 
 interface ProjectsUsageTableProps {
-  projects: BillingProject[];
+  projects: ProjectBillingUsage[];
 }
 
 export function ProjectsUsageTable({ projects }: ProjectsUsageTableProps) {
@@ -61,13 +61,12 @@ export function ProjectsUsageTable({ projects }: ProjectsUsageTableProps) {
                   <td className="py-4 px-6">
                     <div className="flex items-center gap-2">
                       <span
-                        className={`size-2 rounded-full ${
-                          proj.status === "active"
-                            ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]"
-                            : proj.status === "building"
+                        className={`size-2 rounded-full ${proj.status === "active"
+                          ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]"
+                          : proj.status === "building"
                             ? "bg-yellow-400"
                             : "bg-red-500"
-                        }`}
+                          }`}
                       />
                       <span className="text-xs uppercase text-neutral-400">{proj.status}</span>
                     </div>
@@ -80,7 +79,7 @@ export function ProjectsUsageTable({ projects }: ProjectsUsageTableProps) {
                   </td>
                   <td className="py-4 px-6 text-neutral-400">${proj.hourly_rate.toFixed(4)}/hr</td>
                   <td className="py-4 px-6 text-right font-medium text-white">
-                    ${proj.cost.toFixed(2)}
+                    ${proj.cost < 1 ? 0.02 : proj.cost.toFixed(2)}
                   </td>
                 </tr>
               ))}

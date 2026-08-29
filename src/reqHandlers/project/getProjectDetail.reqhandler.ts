@@ -15,6 +15,7 @@ export interface ProjectDetail {
     envs: { key: string; value: string }[];
     github_url: string;
     commit_hash: string;
+    project_id: string;
 }
 
 export async function getProjectDetailHandler(id: string): Promise<ProjectDetail> {
